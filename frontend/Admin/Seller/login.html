@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Buying Circle Registration</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {		
+    background-image: url('login_background');
+    height: 580px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  .logo{
+			background-image: url('logo');
+			height: 100px;
+			width: 120px;
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+  </style>
+</head>
+
+<body>
+  <div class="logo m-3"></div>
+  <div class="container">
+    <h2 class="text-center mb-3">Selling Circle Admin Login</h2>
+    <form id="registrationForm" action="/api/buyer/adminlogin" method="post">
+      <div class="form-group">
+        <label for="circlename">Circle name</label>
+        <input type="text" class="form-control" id="circlename" name="circlename" placeholder="Enter circle name">
+      </div>
+      <div class="form-group">
+        <label for="circleemail">Circle Email</label>
+        <input type="email" class="form-control" id="circleemail" name="circleemail" placeholder="Enter Circle Email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="password">
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-bottom: 40px;">Login</button>
+      <!-- formaction="/adminBuyerDashboard" -->
+    </form>
+    <form id="registrationForm" action="adminSellerRegister" style="padding-top: 0px ;">
+      <div class="form-group">
+        <label for="">Don't have an account?</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Register</button>
+
+    </form>
+  </div>
+
+
+
+
+  <script>
+    const loginForm = document.querySelector('#registrationForm');
+
+    loginForm.addEventListener('submit', event => {
+      event.preventDefault(); // Prevent form from submitting and refreshing page
+
+      const circlename = document.querySelector('#circlename').value;
+      const circleemail = document.querySelector('#circleemail').value;
+      const password = document.querySelector('#password').value;
+
+      // Send authentication request to backend server
+      fetch('/api/seller/adminlogin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          circlename: circlename,
+          circleemail: circleemail,
+          password: password
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            // Authentication succeeded, redirect to dashboard page
+            window.location.href = "/adminSellerDashboard";
+          } else {
+            // Authentication failed, show error message
+            alert('Invalid username or password');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred during login');
+        });
+    });
+  </script>
+
+</body>
+
+
+
+</html>

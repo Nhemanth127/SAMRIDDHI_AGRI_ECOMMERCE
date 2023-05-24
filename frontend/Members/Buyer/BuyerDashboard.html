@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buyer Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<style>
+  #mydetails {
+    background-color: rgb(130, 172, 210);
+    border: 3px solid black;
+
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+  }
+</style>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" onclick="logout()">Buyer Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/BuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/BuyerDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+          <a href="/BuyerDashboardMyOrders" class="list-group-item list-group-item-action">My Orders</a>
+          <a href="/BuyerDashboardNotifications" class="list-group-item list-group-item-action">Notifications</a>
+
+          <a href="/BuyerDashboardViewBuyOrders" class="list-group-item list-group-item-action">View Buy Orders</a>
+          <a href="/BuyerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/BuyerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="/BuyerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/BuyerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+          <a href="/BuyerDashboardOrderFulfillment" class="list-group-item list-group-item-action">Order Fulfillment</a>
+        </div>
+      </div>
+
+
+      <div class="col-md-9 mt-5">
+        <!-- Main content area -->
+        <h2 style="text-align: center;">Buyer Dashboard</h2>
+        <div class="container m-5" id="mydetails">
+          <h3 style="text-align: center;">My Details</h3>
+
+        </div>
+      </div>
+    </div>
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+      myDetails()
+      async function myDetails() {
+        const response = await fetch("/api/buyer/me")
+        const data = await response.json()
+        const user = data.user
+        // console.log(user);
+        let my = document.querySelector("#mydetails")
+        // my.innerHTML += '<h1>hellllooo</h1>'
+        let string = `
+        <ul class="list-group">
+  
+
+  
+  <button type="button" class="list-group-item list-group-item-action">Name - ${user.name}</button>
+  <button type="button" class="list-group-item list-group-item-action">My Email - ${user.email}</button>
+  <button type="button" class="list-group-item list-group-item-action">Circle - ${user.circlename}</button>
+  <button type="button" class="list-group-item list-group-item-action">Circle Email- ${user.circleemail}</button>
+  <button type="button" class="list-group-item list-group-item-action">Address - ${user.address}</button>
+  <button type="button" class="list-group-item list-group-item-action">Area - ${user.area}</button>
+  <button type="button" class="list-group-item list-group-item-action">No of Orders - ${user.orders.length}</button>
+  
+</ul>
+        `
+        my.innerHTML += string
+
+      }
+    </script>
+</body>
+
+</html>

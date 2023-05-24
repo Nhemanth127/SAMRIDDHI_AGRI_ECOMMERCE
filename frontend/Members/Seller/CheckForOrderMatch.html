@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Seller Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .list-group {
+      
+      margin-top: 30%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Seller Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/SellerDashboard" class="list-group-item list-group-item-action active" style="z-index: 0;">Dashboard</a>
+          <a href="/SellerDashboardAnnounceSales" class="list-group-item list-group-item-action">Announce Sales</a>
+          <a href="/SellerDashboardMySales" class="list-group-item list-group-item-action">My Sales</a>
+          <a href="/SellerDashboardAggregateBuyOrder" class="list-group-item list-group-item-action">Aggregate Buy
+            Order</a>
+          <a href="/SellerDashboardCheckForOrderMatch" class="list-group-item list-group-item-action">Check for Order
+            Match</a>
+          <a href="/SellerDashboardBuyOrderNotifications" class="list-group-item list-group-item-action">Confirm Buy
+            Order Notifications to place Final Order</a>
+          <a href="/SellerDashboardTransportOrderNotifications" class="list-group-item list-group-item-action">Confirm
+            Transport Order Notifications for Transport Confirmation</a>
+
+          <a href="/SellerDashboardBuyOrders" class="list-group-item list-group-item-action">Buy Orders</a>
+          <a href="/SellerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/SellerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated
+            Orders</a>
+          <a href="/SellerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/SellerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+        </div>
+      </div>
+
+
+      <d class="col-md-9 mt-5">
+        <!-- Main content area -->
+        <h2 style="text-align: center;">Check For Order Match</h2>
+        <!-- here -->
+        <div class="container mt-4">
+        
+          <button type=" button" class="btn btn-info" onclick="MatchOrdersCheckBox()">
+            Click here to Match Orders
+          </button>
+      
+          <h4 style="margin-top: 2%;">All Aggregated Orders Details</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>Click</th>
+                <th>No</th>
+                <th>Aggregate Id</th>
+                <th>No Of Buyers</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Total Qunatity</th>
+                <th>Price</th>
+                <th>Total Price</th>
+                <th>Is Delivered</th>
+              </tr>
+            </thead>
+            </thead>
+            <tbody id="aggregatebody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+
+
+
+        <div class="container mt-5">
+          <h4 style="text-align: center;">My Sales</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>Click</th>
+                <th>No.</th>
+                <th>Id</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Min Price</th>
+                <th>Max Price</th>
+                <th>Min Order</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody id="salesbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="container mt-5">
+          <h4>Detailed View of All Aggregated Orders from all Buying circles</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>Aggregate No</th>
+                <th>Aggregate Id</th>
+                <th>Circle</th>
+                <th>Buyer</th>
+                <th>Buyer Email</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Qunatity</th>
+                <th>Total Price</th>
+                <th>Is Delivered</th>
+              </tr>
+            </thead>
+            <tbody id="aggregatedordersbody">
+            </tbody>
+          </table>
+        </div>
+
+    </div>
+  </div>
+
+  <script>
+    async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+
+    function MatchOrdersCheckBox() {
+      var aggOrder = document.querySelectorAll('input[type=radio][name=buildAggOrders]');
+      var saleOrder = document.querySelectorAll('input[type=radio][name=buildSalesOrders]');
+      var order = null, sale = null;
+      aggOrder.forEach((box) => {
+        if (box.checked) {
+          const row = box.closest('tr');
+          const columns = row.querySelectorAll('td');
+          order = columns[2].innerText;
+        }
+      });
+      saleOrder.forEach((box) => {
+        if (box.checked) {
+          const row = box.closest('tr');
+          const columns = row.querySelectorAll('td');
+          sale = columns[2].innerText;
+
+        }
+      });
+
+      if (order === null && sale == null) {
+        alert("Select 1 Aggregate order and 1 Sale order to  check for OrderMatch")
+        window.location.href = "/SellerDashboardCheckForOrderMatch"
+      }
+      else if (order === null) {
+        alert("Select 1 Aggregate order");
+        window.location.href = "/SellerDashboardCheckForOrderMatch"
+      }
+      else if (sale === null) {
+        alert("Select 1 Sale order");
+        window.location.href = "/SellerDashboardCheckForOrderMatch"
+      }
+      // console.log(order);
+      // console.log(sale);
+      else {
+
+        fetch(`/api/seller/ordermatch`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sale: sale,
+            order: order,
+          })
+        })
+          .then(response => {
+            if (response.ok) {
+              // Authentication succeeded, redirect to dashboard page
+              alert("Order Match is Successfully Placed From Your side, now All Buyers must confirm it for you to place final order")
+              window.location.href = "/SellerDashboardCheckForOrderMatch";
+            } else {
+              alert(`Either The Order and Sale Category is not matching or there is a Mis-Match for price and Order Quantity, Please try again with valid data!`);
+              window.location.href = "/SellerDashboardCheckForOrderMatch";
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert(`An error occurred \n${error}`);
+            window.location.href = "/BuyerDashboardNotifications";
+          });
+      }
+
+    }
+    buildAggregate()
+    async function buildAggregate() {
+      const response = await fetch("/api/buyer/buyordersAggregate")
+      const data = await response.json()
+      const orders = data.Orders
+      for (let i = 0; i < orders.length; i++) {
+        let row = `<tr>
+          <td><input type="radio" id="buildAggOrders" name="buildAggOrders" value="1"></td>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td> 
+          <td>${orders[i].users.length}</td> 
+          <td>${orders[i].category}</td> 
+          <td>${orders[i].product}</td> 
+          <td>${orders[i].quantity}</td> 
+          <td>${orders[i].price}</td> 
+          <td>${orders[i].totalprice}</td> 
+          <td>${orders[i].isDelivered}</td> 
+          </tr>
+        `
+        aggregatebody.innerHTML += row
+      }
+    }
+
+    buildSales()
+    async function buildSales() {
+      const response = await fetch("/api/seller/mysales")
+      const data = await response.json()
+      const sales = data.sales
+      for (let i = 0; i < sales.length; i++) {
+        let row = `<tr>
+            <td><input type="radio" id="buildSalesOrders" name="buildSalesOrders" value="1"></td>
+            <td>${i + 1}</td> 
+            <td>${sales[i]._id}</td>  
+            <td>${sales[i].product.name}</td> 
+            <td>${sales[i].product.category}</td> 
+            <td>${sales[i].product.minprice}</td> 
+            <td>${sales[i].product.maxprice}</td> 
+            <td>${sales[i].product.minorder}</td> 
+            <td>${sales[i].product.quantity}</td> 
+            </tr>
+          `
+        salesbody.innerHTML += row
+      }
+    }
+
+    buildAggregateOrders()
+    async function buildAggregateOrders() {
+      const response = await fetch("/api/buyer/buyordersAggregate")
+      const data = await response.json()
+      const orders = data.Orders
+      for (let i = 0; i < orders.length; i++) {
+        const users = orders[i].users
+        for (let j = 0; j < users.length; j++) {
+          let row = `<tr>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td> 
+          <td>${users[j].circle}</td> 
+          <td>${users[j].name}</td> 
+          <td>${users[j].email}</td> 
+          <td>${orders[i].category}</td> 
+          <td>${orders[i].product}</td> 
+          <td>${users[j].quantity}</td> 
+          <td>${users[j].totalprice}</td> 
+          <td>${orders[j].isDelivered}</td> 
+          </tr>
+        `
+          aggregatedordersbody.innerHTML += row
+        }
+      }
+    }
+
+
+  </script>
+
+  </div>
+
+</body>
+
+</html>

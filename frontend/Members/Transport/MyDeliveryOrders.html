@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Transporter Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .list-group {
+      position: fixed;
+      margin-top: 4%;
+      width: 15%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Transporter Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/TransportDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/TransportDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/TransportDashboardFinalOrders" class="list-group-item list-group-item-action">View Final Orders</a>
+          <a href="/TransportDashboardRequestOrders" class="list-group-item list-group-item-action">Request For Order
+            Transportation</a>
+          <a href="/TransportDashboardMyDeliveryOrders" class="list-group-item list-group-item-action">My Delivery
+            Orders</a>
+          <a href="/TransportDashboardAcknowledgeDelivery" class="list-group-item list-group-item-action">Acknowledge
+            Delivery</a>
+        </div>
+      </div>
+
+      <div class="col-md-9 mt-5">
+        <h2 style="text-align: center;">My Delivery Orders</h2>
+        <div class="container mt-5">
+          <h4>My Transport Orders</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>order Id</th>
+                <th>No Of Buyers</th>
+                <th>Seller</th>
+                <th>Seller Email</th>
+                <th>Seller Circle</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Total Quantity</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            </thead>
+            <tbody id="ordersbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="container mt-5">
+          <h4>Detailed View of All My Transport Orders</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Order Id</th>
+                <th>Buying Circle</th>
+                <th>Buyer</th>
+                <th>Buyer Email</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Seller</th>
+                <th>Seller Email</th>
+                <th>Seller Circle</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody id="finalordersbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+
+      buildorders()
+      async function buildorders() {
+        const response = await fetch("/api/transport/mytransportorders")
+        const data = await response.json()
+        const orders = data.orders
+        // console.log(orders);
+        for (let i = 0; i < orders.length; i++) {
+          const users = orders[i].order.users
+          // console.log(users);
+          let row = `
+                  <td>${i + 1}</td>
+                  <td>${orders[i]._id}</td>
+                  <td>${orders[i].order.users.length}</td>
+                  <td>${orders[i].sale.seller}</td>
+                  <td>${orders[i].sale.selleremail}</td>
+                  <td>${orders[i].sale.circle}</td>
+                  <td>${orders[i].order.category}</td>
+                  <td>${orders[i].order.product}</td>
+                  <td>${orders[i].order.quantity}</td>
+                  <td>${orders[i].order.totalprice}</td>
+                  <td>${i + 1}</td>
+          `
+          ordersbody.innerHTML += row
+        }
+      }
+      buildorders1()
+      async function buildorders1() {
+        const response = await fetch("/api/transport/mytransportorders")
+        const data = await response.json()
+        const orders = data.orders
+        // console.log(orders);
+        let counter = 1
+        for (let i = 0; i < orders.length; i++) {
+          const users = orders[i].order.users
+          for (let j = 0; j < users.length; j++, counter++) {
+            // console.log(users[j]);
+            let row = `
+                  <td>${counter}</td>
+                  <td>${orders[i]._id}</td>
+                  <td>${users[j].circle}</td>
+                  <td>${users[j].name}</td>
+                  <td>${users[j].email}</td>
+                  <td>${users[j].address}</td> 
+                  <td>${users[j].phone}</td> 
+                  <td>${orders[i].sale.seller}</td>
+                  <td>${orders[i].sale.selleremail}</td>
+                  <td>${orders[i].sale.circle}</td>
+                  <td>${orders[i].order.category}</td>
+                  <td>${orders[i].order.product}</td>
+                  <td>${users[j].quantity}</td>
+                  <td>${users[j].totalprice}</td>
+          `
+            finalordersbody.innerHTML += row
+          }
+
+        }
+      }
+    </script>
+</body>
+
+</html>

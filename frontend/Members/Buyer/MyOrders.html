@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Buyer Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .list-group {
+      position: fixed; 
+      margin-top: 4%;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation bar -->
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+  <a class="navbar-brand" href="#">Buyer Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" onclick="logout()">Logout</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main content -->
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-md-2">
+      <!-- Sidebar menu -->
+      <div class="list-group">
+        <a href="/BuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+        <a href="/BuyerDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+        <a href="/BuyerDashboardMyOrders" class="list-group-item list-group-item-action">My Orders</a>
+        <a href="/BuyerDashboardNotifications" class="list-group-item list-group-item-action">Notifications</a>
+
+        <a href="/BuyerDashboardViewBuyOrders" class="list-group-item list-group-item-action">View Buy Orders</a>
+        <a href="/BuyerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+        <a href="/BuyerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+        <a href="/BuyerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+        <a href="/BuyerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a> 
+        <a href="/BuyerDashboardOrderFulfillment" class="list-group-item list-group-item-action">Order Fulfillment</a>     
+      </div>
+    </div>
+
+
+    <div class="container m-4 mt-5">
+      <h4 style="text-align: center;">My Orders</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Id</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Max Price</th>
+            <th>Min Price</th>
+            <th>Is Delivered</th>
+          </tr>
+        </thead>
+        <tbody id="ordersbody">
+          <!-- Table rows will be dynamically populated here -->
+        </tbody>
+      </table>
+
+    
+      <h4 style="text-align: center; margin-top:5%;">My Delivered Orders</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Id</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Max Price</th>
+            <th>Min Price</th>
+          </tr>
+        </thead>
+        <tbody id="deliveredbody">
+          <!-- Table rows will be dynamically populated here -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+ 
+
+
+
+  <script>
+    async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+    buildOrders()
+    async function buildOrders() {
+      const response = await fetch("/api/buyer/myorders")
+      const data = await response.json()
+      const orders = data.orders
+      // console.log(orders)
+      for (let i = 0; i < orders.length; i++) {
+        let status = "No"
+        if (orders[i].isDelivered) {
+          status = "Yes"
+        }
+
+        let row = `<tr>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td>  
+          <td>${orders[i].product.name}</td> 
+          <td>${orders[i].product.category}</td> 
+          <td>${orders[i].product.quantity}</td> 
+          <td>${orders[i].product.maxprice}</td> 
+          <td>${orders[i].product.minprice}</td>  
+          <td>${status}</td> 
+          </tr>
+        `
+        ordersbody.innerHTML += row
+      }
+    }
+
+
+    buildOrders1()
+    async function buildOrders1() {
+      const response = await fetch("/api/buyer/mydeliveredorders")
+      const data = await response.json()
+      const orders = data.deliveredOrders
+      // console.log(orders)
+      for (let i = 0; i < orders.length; i++) {
+        let row = `<tr>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td>  
+          <td>${orders[i].product.name}</td> 
+          <td>${orders[i].product.category}</td> 
+          <td>${orders[i].product.quantity}</td> 
+          <td>${orders[i].product.maxprice}</td> 
+          <td>${orders[i].product.minprice}</td>   
+          </tr>
+        `
+        deliveredbody.innerHTML += row
+      }
+    }
+
+  </script>
+
+</div>
+
+</body>
+</html>

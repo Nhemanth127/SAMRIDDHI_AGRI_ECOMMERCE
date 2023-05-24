@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buyer Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .list-group {
+      position: fixed;
+      margin-top: 4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand">Buyer Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/BuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/BuyerDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+          <a href="/BuyerDashboardMyOrders" class="list-group-item list-group-item-action">My Orders</a>
+          <a href="/BuyerDashboardNotifications" class="list-group-item list-group-item-action">Notifications</a>
+
+          <a href="/BuyerDashboardViewBuyOrders" class="list-group-item list-group-item-action">View Buy Orders</a>
+          <a href="/BuyerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/BuyerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="/BuyerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/BuyerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+          <a href="/BuyerDashboardOrderFulfillment" class="list-group-item list-group-item-action">Order Fulfillment</a>
+        </div>
+
+      </div>
+
+
+      <div class="container m-4 mt-5">
+        <h2 style="text-align: center;">Order Fulfillment</h2>
+
+        <button type=" button" class="btn btn-info" onclick="OrderFulfillment()">
+          Click here to Acknowledge
+        </button>
+
+        <div>
+          <br>
+          <p>
+            <i>Note</i>
+            <b>
+              Kindly Acknowledge Only If You have Recieved Your Order Successfully.
+            </b>
+          </p>
+          <br>
+        </div>
+
+        <table class="table table-striped mt-4">
+          <thead>
+            <tr>
+              <th>Click</th>
+              <th>No.</th>
+              <th>BuyOrder Id</th>
+              <th>Category</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Transporter Id</th>
+            </tr>
+          </thead>
+          <tbody id="salesbody">
+            <!-- Table rows will be dynamically populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <script>
+
+        async function logout() {
+          await fetch("/api/buyer/logout")
+          window.location.href = "/"
+        }
+        buildSales()
+        async function buildSales() {
+          const response = await fetch("/api/buyer/acknowledgeOrders")
+          const data = await response.json()
+          const sales = data.deliveredOrders
+          // console.log(sales)
+          for (let i = 0; i < sales.length; i++) {
+            let row = `<tr>
+            <td><input type="radio" id="buildAggOrders" name="buildAggOrders" value="1"></td>
+            <td>${i + 1}</td> 
+            <td>${sales[i]._id}</td>  
+            <td>${sales[i].product.category}</td> 
+            <td>${sales[i].product.name}</td> 
+            <td>${sales[i].product.quantity}</td> 
+            <td>${sales[i].transporter}</td> 
+            </tr>
+          `
+            salesbody.innerHTML += row
+          }
+        }
+
+        async function OrderFulfillment() {
+          // alert("clicked")
+          // const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+          var noti = document.querySelectorAll('input[type=radio][name=buildAggOrders]');
+
+          let ids = []
+          noti.forEach((checkbox) => {
+            if (checkbox.checked) {
+              const row = checkbox.closest('tr');
+              const columns = row.querySelectorAll('td');
+              ids.push(columns[2].innerText)
+            }
+          });
+          // console.log(ids);
+          if (ids.length < 1) {
+            alert("Please Select one Notification to confirm")
+            window.location.href = "/SellerDashboardBuyOrderNotifications";
+
+          }
+          // else if (ids.length > 1) {
+          //   alert("Please Select Only one Notification to confirm, Not more than one.")
+          //   window.location.href = "/SellerDashboardBuyOrderNotifications";
+
+          // }
+          else {
+            const id = ids[0]
+            console.log(id);
+            alert("Your Response Has Been Recorded ThankYou, Hope you Have Recieved Your Order, ThankYou!")
+            window.location.href="/BuyerDashboard"
+            // fetch(`/api/seller/placeorder/${id}`, {
+            //   method: 'POST',
+            //   headers: {
+            //     'Content-Type': 'application/json'
+            //   },
+            // })
+            //   .then(response => {
+            //     if (response.ok) {
+            //       // Authentication succeeded, redirect to dashboard page
+            //       alert("Final Order is Placed Now,stock is reduced and waiting for Transporter for Delivering the order, ThankYou!!")
+            //       window.location.href = "/SellerDashboardBuyOrderNotifications";
+            //     } else {
+            //       alert(`Either All Buyers haven't Confirmed yet, or the Required Qunatity is Greater than Stock left So Sorry, can't Place Final Order Now, Please Try Again Later!`);
+            //       window.location.href = "/SellerDashboardBuyOrderNotifications";
+            //     }
+            //   })
+            //   .catch(error => {
+            //     console.error('Error:', error);
+            //     alert(`An error occurred \n${error}`);
+            //     window.location.href = "/SellerDashboardBuyOrderNotifications";
+
+            //   });
+          }
+        }
+
+
+      </script>
+    </div>
+
+
+
+</body>
+
+</html>

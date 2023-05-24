@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Registration Form</h2>
+        <form action="api/buyer/addcircle" method="post" id="registercircle">
+            <div class="mb-3">
+                <label for="circlename" class="form-label">Enter Circle name</label>
+                <input type="text" class="form-control" id="circlename" name="circlename"
+                    placeholder="circle name should be unique">
+            </div>
+            <div class="mb-3">
+                <label for="circleemail" class="form-label">Enter Circle Email</label>
+                <input type="text" class="form-control" id="circleemail" name="circleemail"
+                    placeholder="circle Email should be unique">
+            </div>
+            <div class="mb-3">
+                <label for="admin" class="form-label">Enter Circle admin</label>
+                <input type="text" class="form-control" id="admin" name="admin" placeholder="circle admin">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Enter Circle Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                    placeholder="Password should have atleast 6 characters">
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Enter Circle Addres</label>
+                <input type="text" class="form-control" id="address" name="address" placeholder="circle Addres">
+            </div>
+            <div class="mb-3">
+                <label for="area" class="form-label">Enter Circle Area</label>
+                <input type="text" class="form-control" id="area" name="area" placeholder="Circle Area">
+            </div>
+            <div class="mb-3">
+                <label for="pincode" class="form-label">Enter Circle Address pincode</label>
+                <input type="number" class="form-control" id="pincode" name="pincode" placeholder="pincode">
+            </div>
+            <button type="submit" onclick="myFunction()" class="btn btn-primary">Register</button>
+
+            <a href="adminBuyerLogin" class="btn btn-secondary">Login</a>
+        </form>
+    </div>
+    <script>
+        const registrationForm = document.querySelector('#registercircle');
+
+        registrationForm.addEventListener('submit', event => {
+            event.preventDefault(); // Prevent form from submitting and refreshing page
+
+            const circlename = document.querySelector('#circlename').value;
+            const circleemail = document.querySelector('#circleemail').value;
+            const password = document.querySelector('#password').value;
+            const admin = document.querySelector('#admin').value;
+            const address = document.querySelector('#address').value;
+            const area = document.querySelector('#area').value;
+            const pincode = document.querySelector('#pincode').value;
+
+            // Send authentication request to backend server
+            fetch('/api/buyer/addcircle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    circlename: circlename,
+                    circleemail: circleemail,
+                    password: password,
+                    admin: admin,
+                    address: address,
+                    area: area,
+                    pincode: pincode,
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Authentication succeeded, redirect to dashboard page
+                        alert("Circle Registered Successfully")
+                        window.location.href = "/adminBuyerlogin";
+                    } else {
+                        // Authentication failed, show error message
+                        alert('Please provide valid data and email should be unqiue');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during Registraion');
+                });
+        });
+    </script>
+
+
+</body>

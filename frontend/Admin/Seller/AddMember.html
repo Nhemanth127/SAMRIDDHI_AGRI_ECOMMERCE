@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Registration Form</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Seller Add Member Form</h2>
+    <form action="api/seller/addcircle" method="post" id="registercircle">
+      <div class="mb-3">
+        <label for="name" class="form-label">Enter Member name</label>
+        <input type="text" class="form-control" id="name" name="name" placeholder="member name">
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Enter Member Email</label>
+        <input type="text" class="form-control" id="email" name="email" placeholder="Member Email should be unique">
+      </div>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Enter Member Phone Number</label>
+        <input type="number" class="form-control" id="phone" name="phone"
+            placeholder="Enter Member's Valid Phone Number">
+    </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Enter Member Password</label>
+        <input type="password" class="form-control" id="password" name="password"
+          placeholder="Password should have atleast 8 characters">
+      </div>
+      <div class="mb-3">
+        <label for="address" class="form-label">Enter Member Address</label>
+        <input type="text" class="form-control" id="address" name="address" placeholder="circle Addres">
+      </div>
+      <div class="mb-3">
+        <label for="area" class="form-label">Enter Area</label>
+        <input type="text" class="form-control" id="area" name="area" placeholder="Member Area">
+      </div>
+      <div class="mb-3">
+        <label for="pincode" class="form-label">Enter Member Address pincode</label>
+        <input type="number" class="form-control" id="pincode" name="pincode" placeholder="pincode">
+      </div>
+      <div class="mb-3">
+        <label for="community" class="form-label">Enter Member community</label>
+        <input type="text" class="form-control" id="community" name="community" placeholder="community">
+      </div>
+      <button type="submit" class="btn btn-primary">Register</button>
+
+      
+    </form>
+  </div>
+  <script>
+    const registrationForm = document.querySelector('#registercircle');
+
+    registrationForm.addEventListener('submit', event => {
+      event.preventDefault(); // Prevent form from submitting and refreshing page
+
+      const name = document.querySelector('#name').value;
+      const email = document.querySelector('#email').value;
+      const password = document.querySelector('#password').value;
+      const address = document.querySelector('#address').value;
+      const area = document.querySelector('#area').value;
+      const pincode = document.querySelector('#pincode').value;
+      const community = document.querySelector('#community').value;
+      const phone = document.querySelector('#phone').value;
+
+
+      // Send authentication request to backend server
+      fetch('/api/seller/addcirclemember', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+          address: address,
+          area: area,
+          pincode: pincode,
+          community: community,
+          phone:phone
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            // Authentication succeeded, redirect to dashboard page
+            alert("Member Registered to the Circle Successfully")
+            window.location.href = "/adminSellerDashboard";
+          } else {
+            // Authentication failed, show error message
+            alert('Please provide valid data following all conditions and email should be unqiue');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred during Registraion');
+        });
+    });
+  </script>
+
+
+</body>

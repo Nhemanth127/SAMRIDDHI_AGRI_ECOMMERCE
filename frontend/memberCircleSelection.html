@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Member Circle Selection</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .card {
+          width: 300px;
+          height: 400px;
+          margin: 20px;
+        }
+        img{
+            width: 150px;
+            height: 250px;
+        }
+		/* body {
+			background-image: url('background');
+			
+			
+			height: 610px;
+			
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+
+			
+		} */
+		body{
+			background-color:cadetblue;
+		}
+		.logo{
+			background-image: url('logo');
+			height: 100px;
+			width: 120px;
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+      </style>
+</head>
+<body>
+	<div class="logo m-3">
+
+	</div>
+
+	<div class="container-fluid mt-4">
+		<div class="row justify-content-center">
+			<div class="col-md-3 col-lg-3">
+				<div class="card m-3">
+					<img class="card-img-top" src="img_buyer" alt="Buyer">
+					<div class="card-body">
+						<a href="memberBuyerLogin" class="btn btn-primary d-block mx-auto">Buyer</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 col-lg-3">
+				<div class="card m-3">
+					<img class="card-img-top" src="img_seller" alt="Seller">
+					<div class="card-body">
+							<a href="memberSellerLogin" class="btn btn-primary d-block mx-auto">Seller</a>
+					</div>
+				</div>
+			</div>
+        <div class="col-md-3 col-lg-3">
+            <div class="card m-3">
+                <img class="card-img-top" src="img_transport" alt="Transporter">
+                <div class="card-body">
+                        <a href="memberTransportLogin" class="btn btn-primary d-block mx-auto">Transporter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+	</div>
+
+</body>
+</html>

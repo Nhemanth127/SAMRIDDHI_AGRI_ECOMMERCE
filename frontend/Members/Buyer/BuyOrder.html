@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buyer Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .list-group {
+      position: fixed;
+      margin-top: 4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Buyer Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/BuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/BuyerDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+          <a href="/BuyerDashboardMyOrders" class="list-group-item list-group-item-action">My Orders</a>
+          <a href="/BuyerDashboardNotifications" class="list-group-item list-group-item-action">Notifications</a>
+
+          <a href="/BuyerDashboardViewBuyOrders" class="list-group-item list-group-item-action">View Buy Orders</a>
+          <a href="/BuyerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/BuyerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="/BuyerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/BuyerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+          <a href="/BuyerDashboardOrderFulfillment" class="list-group-item list-group-item-action">Order Fulfillment</a>
+        </div>
+      </div>
+
+
+      <div class="col-md-9 mt-5">
+        <!-- Main content area -->
+        <div class="container mt-5">
+          <h2 class="text-center mb-4">Buy Orders</h2>
+          <form id="myForm">
+            <table class="table" id="myTable">
+              <thead>
+                <tr class="text-center">
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>MinPrice</th>
+                  <th>MaxPrice</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="productTable">
+                <tr>
+                  <td>
+                    <input type="text" class="form-control" name="name" required />
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" name="category" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="quantity" step="1" min="0" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="minprice" step="1" min="0" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="maxprice" step="1" min="0" required />
+                  </td>
+                  <!-- <td>
+                    <button type="button" class="btn btn-danger" onclick="removeProduct(this)">
+                      Remove
+                    </button>
+                  </td> -->
+                </tr>
+              </tbody>
+            </table>
+            <!-- <button type="button" class="btn btn-primary" onclick="addProduct()">
+              Add Product
+            </button> -->
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+      var form = document.getElementById("myForm");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault(); // prevent form from submitting
+
+        var formData = new FormData(form);
+        var dataObject = {};
+        // convert FormData to JSON object
+        formData.forEach(function (value, key) {
+          dataObject[key] = value;
+        });
+
+        // log the JSON object to the console
+        // console.log(JSON.stringify(dataObject));
+        // console.log(dataObject);
+        const jsonData = JSON.stringify(dataObject);
+        fetch('api/buyer/buyorders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: jsonData
+        })
+          .then(response => {
+            if (response.ok) {
+              // Authentication succeeded, redirect to dashboard page
+              alert("BuyOrder Request For this product is Recorded.")
+              window.location.href = "/BuyerDashboardBuyOrder";
+            } else {
+              // Authentication failed, show error message
+              alert('An error occurred while Adding Buy Order, Please Try again with Proper Data and buyer must Login');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while Adding Buy Order, Please Try again with Proper Data and buyer must Login');
+          });
+      });
+      // function addProduct()
+      // {
+      //   var table = document.getElementById("productTable");
+      //   var newRow = table.insertRow();
+      //   var nameCell = newRow.insertCell();
+      //   var categoryCell = newRow.insertCell();
+      //   var quantityCell = newRow.insertCell();
+      //   var minPriceCell = newRow.insertCell();
+      //   var maxPriceCell = newRow.insertCell();
+      //   var buttonCell = newRow.insertCell();
+      //   nameCell.innerHTML =
+      //     '<input type="text" class="form-control" name="name" required>';
+      //   categoryCell.innerHTML =
+      //     '<input type="text" class="form-control" name="category" required >';
+      //   quantityCell.innerHTML =
+      //     '<input type="number" class="form-control" name="quantity" step="1" min="0" required>';
+      //   minPriceCell.innerHTML =
+      //     '<input type="number" class="form-control" name="minprice" step="1" min="0" required>';
+      //   maxPriceCell.innerHTML =
+      //     '<input type="number" class="form-control" name="maxprice" step="1" min="0" required>';
+      //   buttonCell.innerHTML =
+      //     '<button type="button" class="btn btn-danger" onclick="removeProduct(this)">Remove</button>';
+      // }
+
+      // function removeProduct(button) {
+      //   var row = button.parentNode.parentNode;
+      //   row.parentNode.removeChild(row);
+      // }
+    </script>
+</body>
+
+</html>

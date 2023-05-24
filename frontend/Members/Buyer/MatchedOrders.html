@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buyer Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .list-group {
+      position: fixed; 
+      margin-top: 4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Buyer Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/BuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/BuyerDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+          <a href="/BuyerDashboardMyOrders" class="list-group-item list-group-item-action">My Orders</a>
+          <a href="/BuyerDashboardNotifications" class="list-group-item list-group-item-action">Notifications</a>
+
+          <a href="/BuyerDashboardViewBuyOrders" class="list-group-item list-group-item-action">View Buy Orders</a>
+          <a href="/BuyerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/BuyerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="/BuyerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/BuyerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+          <a href="/BuyerDashboardOrderFulfillment" class="list-group-item list-group-item-action">Order Fulfillment</a> 
+        </div>
+      </div>
+
+
+      
+      <div class="col-md-9 mt-5">
+        <h2 style="text-align: center;">Matched Orders Details</h2>
+
+        <div class="container mt-5">
+          <h4>All Matched Orders</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Matched Order Id</th>
+                <th>No Of Buyers</th>
+                <th>Seller</th>
+                <th>Seller Email</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Total Quantity</th>
+                <th>Price</th>
+                <th>Total Price</th>
+                <th>Is Delivered</th>
+              </tr>
+            </thead>
+            </thead>
+            <tbody id="ordersbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="container mt-5">
+          <h4>Detailed View of All Matched Orders from all Buying circles</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Matched Order Id.</th>
+                <th>Buying Circle</th>
+                <th>Buyer</th>
+                <!-- <th>Buyer Email</th> -->
+                <th>Category</th>
+                <th>Product</th>
+                <th>Matched Sale ID</th>
+                <th>Seller Email</th>
+
+
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody id="matchbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+        <div class="container mt-5">
+          <h4>Sales Details</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Id</th>
+                <th>Circle</th>
+                <th>Seller</th>
+                <th>Seller Email</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Min Price</th>
+                <th>Min Order</th>
+                <th>Quantity</th>
+
+              </tr>
+            </thead>
+            <tbody id="salesbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+
+    buildmatch1()
+    async function buildmatch1() {
+      const response = await fetch("/api/buyer/matchedorders")
+      const data = await response.json()
+      // console.log(data);
+      const orders = data.orders
+      // console.log(orders);
+      for (let i = 0; i < orders.length; i++) {
+        // console.log(orders[i]);
+        // const users = orders[i].users
+        // console.log(users);
+        // for (let j = 0; j < users.length; j++) {
+        let status = "No"
+        if (orders[i].isDelivered) {
+          status = "Yes"
+        }
+        let row = `<tr>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td> 
+          <td>${orders[i].order.users.length}</td> 
+          <td>${orders[i].sale.seller}</td> 
+          <td>${orders[i].sale.selleremail}</td> 
+          <td>${orders[i].order.category}</td> 
+          <td>${orders[i].order.product}</td> 
+          <td>${orders[i].order.quantity}</td> 
+          <td>${orders[i].order.price}</td> 
+          <td>${orders[i].order.totalprice}</td> 
+          <td>${status}</td> 
+          </tr>
+        `
+        ordersbody.innerHTML += row
+        // }
+      }
+    }
+
+
+    buildMatch()
+    async function buildMatch() {
+      const response = await fetch("/api/buyer/matchedorders")
+      const data = await response.json()
+      const matchedorders = data.orders
+
+      // console.log(matchedorders)
+
+      let counter = 1
+      for (let i = 0; i < matchedorders.length; i++) {
+        const users = matchedorders[i].order.users
+        // console.log(users)
+
+        for (let j = 0; j < users.length; j++, counter++) {
+          let row = `<tr>
+      <td>${counter}</td> 
+      <td>${matchedorders[i]._id}</td> 
+      <td>${users[j].circle}</td> 
+      <td>${users[j].name}</td> 
+      <td>${matchedorders[i].order.category}</td> 
+      <td>${matchedorders[i].order.product}</td> 
+      <td>${matchedorders[i].sale._id}</td> 
+      <td>${matchedorders[i].sale.selleremail}</td> 
+      <td>${users[j].price}</td> 
+      <td>${users[j].quantity}</td> 
+      <td>${users[j].totalprice}</td> 
+        `
+          matchbody.innerHTML += row
+        }
+      }
+    }
+
+    buildSales()
+    async function buildSales() {
+      const response = await fetch("/api/buyer/sales")
+      const data = await response.json()
+      const sales = data.sales
+      // console.log(sales)
+      for (let i = 0; i < sales.length; i++) {
+        let row = `<tr>
+      <td>${i + 1}</td> 
+      <td>${sales[i]._id}</td> 
+      <td>${sales[i].circle}</td> 
+      <td>${sales[i].seller}</td> 
+      <td>${sales[i].selleremail}</td> 
+      <td>${sales[i].product.category}</td> 
+      <td>${sales[i].product.name}</td> 
+      <td>${sales[i].product.minprice}</td> 
+      <td>${sales[i].product.minorder}</td> 
+      <td>${sales[i].product.quantity}</td> 
+      </tr>
+    `
+        salesbody.innerHTML += row
+      }
+    }
+
+  </script>
+
+
+</body>
+
+</html>

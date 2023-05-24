@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="shortcut icon" type="x-icon" href="/frontend/img/logo.png">
+	<title>Samriddhi</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<style>
+		body {
+			
+			background-image: url('background');
+			
+			/* height: 515px; */
+			height: 580px;
+			
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+
+		}
+		.logo{
+			background-image: url('logo');
+			height: 100px;
+			width: 120px;
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+		.column {
+			text-align: left;
+		}
+
+		div.b {
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 120px;
+  border: 3px solid blue;
+} 
+
+div.c {
+  position: absolute;
+  padding: 10px 30px 30px 90px;
+  /* right: 150px;   */
+  width: 900px;
+  height: 120px;
+  
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size:larger;
+  /* font-size:large; */
+  /* color:darkgreen; */
+  color:black
+  /* color:darkolivegreen */
+ 
+}
+.title{
+	
+	/* color:black; */
+	
+	color: green;
+	padding-left: 7%;
+	font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif ;
+	font-size:50px;
+	
+}
+
+	</style>
+</head>
+
+<body>
+	
+	<!-- <div class="container-fluid">
+		<a class="navbar-brand fw-bold bg-gradient p-3 fs-4" href="#">समृद्धि ಸಮೃದ್ಧಿ</a>
+	</div> -->
+	<div class="logo m-3">
+		
+	</div>
+<div class="title m-3">
+	<p class="">Samriddhi Agri-commerce</p>
+</div>
+
+<div class="c"> 
+	
+	<!-- Samriddhi is a platform that enables communities to come together and engage in agricultural commerce. Buyers and sellers can create circles within their localities to buy and sell farm produce, while transport circles provide the necessary transport between them. This innovative approach to agri-commerce fosters prosperity within communities and promotes local, sustainable agriculture. -->
+	<b>
+		Samriddhi is an online platform that connects communities with their local agriculture, promoting sustainable and prosperous agri-commerce. By eliminating intermediaries and creating direct connections between buyers, sellers, and transporters, Samriddhi fosters transparency, reduces transaction costs, and supports local economies. This innovative approach allows buyers to purchase fresh, locally grown produce directly from farmers and farming communities, and enables farmers to sell their produce at a fair price, improving their income and livelihoods. Samriddhi's commitment to promoting local agriculture and fostering community involvement makes it a game-changer in the world of agri-commerce.
+	</b>
+
+	
+</div>
+
+	</div class="b">	
+		<div class="column" style="margin-left: 60%; margin-right: 7%;" >
+			<div class="m-5" >
+				<div class="card">
+					<div class="card-body">
+						<h4 class="card-title">Admin</h4>
+						<p class="card-text">Select this option if you are an Administrator.</p>
+						<a href="/selectCircles" class="btn btn-primary btn-block">Admin Login</a>
+					</div>
+				</div>
+			</div>
+			
+			<div class=" m-5">
+				<div class="card">
+					<div class="card-body">
+						<h4 class="card-title">Member</h4>
+						<p class="card-text">Select this option if you are a Member.</p>
+						<a href="/memberCircleSelection" class="btn btn-primary btn-block">Member Login</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+	<title>Select Role</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<style>
+		body {
+			background-image: url('background');
+			
+			height: 515px;
+			
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+
+			
+		}
+		.column {
+			text-align: left;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container-fluid text-center m-3">
+		<h1 class="m-5">Samriddhi Agri-commerce</h1>
+		<div class="column">
+			<div class="col-md-4 m-5">
+				<div class="card">
+					<div class="card-body">
+						<h4 class="card-title">Admin</h4>
+						<p class="card-text">Select this option if you are an Administrator.</p>
+						<a href="/selectCircles" class="btn btn-primary btn-block">Admin Login</a>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-4 m-5">
+				<div class="card">
+					<div class="card-body">
+						<h4 class="card-title">Member</h4>
+						<p class="card-text">Select this option if you are a Member.</p>
+						<a href="/memberCircleSelection" class="btn btn-primary btn-block">Member Login</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html> -->
+

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buyer Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .list-group {
+      position: fixed; 
+      margin-top: 4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Buyer Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/BuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/BuyerDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+          <a href="/BuyerDashboardMyOrders" class="list-group-item list-group-item-action">My Orders</a>
+          <a href="/BuyerDashboardNotifications" class="list-group-item list-group-item-action">Notifications</a>
+
+          <a href="/BuyerDashboardViewBuyOrders" class="list-group-item list-group-item-action">View Buy Orders</a>
+          <a href="/BuyerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/BuyerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="/BuyerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/BuyerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+          <a href="/BuyerDashboardOrderFulfillment" class="list-group-item list-group-item-action">Order Fulfillment</a> 
+        </div>
+      </div>
+
+
+      <div class="col-md-9 mt-5">
+        <!-- Main content area -->
+        <h2 style="text-align: center;">Notifications</h2>
+        <div class="container m-4">
+          <h4>Buy Order Confirm Notifications</h4>
+          <div class="container">
+            <p>
+              <br>
+              <b>
+                These Notifications are Being Displayed Because, Seller has Aggregated Your Request and ,Order Match is
+                Succefully Done <br>Kindly Confirm These Requests for confirmation from your side , For placinng Final
+                Order By Seller. <br><br>
+                <i>Note</i> <b>You can Only Confirm one product at a time ,So select only select one checkbox at a
+                  time</b>
+              </b>
+            </p>
+          </div>
+          <br>
+          <button type=" button" class="btn btn-info" onclick="getCheckBox()">
+            Click to Confirm this Notification
+          </button>
+          <br><br>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>click</th>
+                <th>No.</th>
+                <th>Notification Id</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Your Price</th>
+                <th>Seller Price</th>
+                <th>Seller Id</th>
+                <th>Seller</th>
+                <th>Seller Email</th>
+                <th>Seller Circle</th>
+              </tr>
+            </thead>
+            <tbody id="notificationsbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+
+      async function getCheckBox() {
+        // alert("clicked")
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let ids = []
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            const row = checkbox.closest('tr');
+            const columns = row.querySelectorAll('td');
+            ids.push(columns[2].innerText)
+          }
+        });
+        // console.log(ids);
+        if (ids.length < 1) {
+          alert("Please Select one Notification to confirm")
+        }
+        else if (ids.length > 1) {
+          alert("Please Select Only one Notification to confirm, Not more than once.")
+        }
+        else {
+          const id = ids[0]
+          console.log(id);
+          fetch(`/api/buyer/confirmorder/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+            .then(response => {
+              if (response.ok) {
+                // Authentication succeeded, redirect to dashboard page
+                alert("Your Confirmation For this Order is Successfully Recorded, Now Seller will place Final Order and ready for delivery")
+                window.location.href = "/BuyerDashboardNotifications";
+              } else {
+                window.location.href = "/BuyerDashboardNotifications";
+                alert('An Error Ocuured Please Try Again!');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert(`An error occurred \n${error}`);
+              window.location.href = "/BuyerDashboardNotifications";
+              
+            });
+        }
+      }
+      buildNotifications()
+      async function buildNotifications() {
+        const response = await fetch("/api/buyer/mynotifications")
+        const data = await response.json()
+        const notifications = data.myNotifiactions
+        for (let i = 0; i < notifications.length; i++) {
+          const orderid = notifications[i].order.order
+          const agg = await fetch(`/api/buyer/getaggregateorder/${orderid}`)
+          const d = await agg.json()
+          const dd = d.aggregatedOrder
+          let row = `
+          <td><input type="checkbox" name="subscribe" value="1"></td>
+                  <td>${i + 1}</td>
+                  <td>${notifications[i]._id}</td>
+                  <td>${notifications[i].buyorderId.product.category}</td>
+                  <td>${notifications[i].buyorderId.product.name}</td>
+                  <td>${notifications[i].buyorderId.product.quantity}</td>
+                  <td>${notifications[i].buyorderId.product.maxprice}</td>
+                  <td>${dd.price}</td>
+                  <td>${notifications[i].saleId.sellerId}</td>
+                  <td>${notifications[i].saleId.seller}</td>
+                  <td>${notifications[i].saleId.selleremail}</td>
+                  <td>${notifications[i].saleId.circle}</td>
+          `
+          notificationsbody.innerHTML += row
+        }
+      }
+
+    </script>
+</body>
+
+</html>

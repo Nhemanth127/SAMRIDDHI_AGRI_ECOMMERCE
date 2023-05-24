@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {		
+			background-image: url('login_background');
+			height: 580px;
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+    .logo{
+			background-image: url('logo');
+			height: 100px;
+			width: 120px;
+			background-position: center;
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+    </style>
+</head>
+
+<body>
+  <div class="logo m-3"></div>
+    <div class="container mt-5">
+        <h2 class="text-center mb-3">Seller Login Page</h2>
+        <form id="registrationForm" action="/api/seller/login" method="post" >
+            <div class="form-group">
+                <label for="email">Member Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" >
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" >
+            </div>
+            <button type="submit" class="btn btn-primary"  style="margin-bottom: 40px;" >Login</button>
+        </form>
+        
+    </div>
+
+
+    <script>
+        const loginForm = document.querySelector('#registrationForm');
+      
+        loginForm.addEventListener('submit', event => {
+          event.preventDefault(); // Prevent form from submitting and refreshing page
+      
+          const email = document.querySelector('#email').value;
+          const password = document.querySelector('#password').value;
+      
+          // Send authentication request to backend server
+          fetch('/api/seller/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: email,
+              password: password
+            })
+          })
+          .then(response => {
+            if (response.ok) {
+              // Authentication succeeded, redirect to dashboard page
+              window.location.href = "/SellerDashboard";
+            } else {
+              // Authentication failed, show error message
+              alert('Invalid Email or Password');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during login');
+          });
+        });
+      </script>
+
+
+
+</body>
+
+</html> 

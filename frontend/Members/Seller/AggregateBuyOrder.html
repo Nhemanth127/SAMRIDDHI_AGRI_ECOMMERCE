@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+  <title>Seller Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .list-group {
+      /* position: fixed;  */
+      margin-top: 30%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Seller Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/SellerDashboard" class="list-group-item list-group-item-action active"
+            style="z-index: 0;">Dashboard</a>
+          <a href="/SellerDashboardAnnounceSales" class="list-group-item list-group-item-action">Announce Sales</a>
+          <a href="/SellerDashboardMySales" class="list-group-item list-group-item-action">My Sales</a>
+          <a href="/SellerDashboardAggregateBuyOrder" class="list-group-item list-group-item-action">Aggregate Buy
+            Order</a>
+          <a href="/SellerDashboardCheckForOrderMatch" class="list-group-item list-group-item-action">Check for Order
+            Match</a>
+          <a href="/SellerDashboardBuyOrderNotifications" class="list-group-item list-group-item-action">Confirm Buy
+            Order Notifications to place Final Order</a>
+          <a href="/SellerDashboardTransportOrderNotifications" class="list-group-item list-group-item-action">Confirm
+            Transport Order Notifications for Transport Confirmation</a>
+
+          <a href="/SellerDashboardBuyOrders" class="list-group-item list-group-item-action">Buy Orders</a>
+          <a href="/SellerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/SellerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated
+            Orders</a>
+          <a href="/SellerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/SellerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+        </div>
+      </div>
+
+
+      <div class="col-md-9 mt-5">
+        <!-- Main content area -->
+        <h2 style="text-align: center;">Buy Order Details</h2>
+        <hr>
+        <h4 style=" margin-top: 1em;">Buy Order Requests From Users Of All Circle</h4>
+        <div class="container mt-4">
+          <button type=" button" class="btn btn-info" onclick="getCheckBox()">
+            Click to Aggregate orders
+          </button>
+          <input type="number" name="price" id="price" placeholder="Enter aggregate price" step="1" min="0" required />
+        </div>
+        <div class=" container mt-3">
+          <table class="table table-striped ">
+            <thead>
+              <tr>
+                <th>Click</th>
+                <th>No</th>
+                <th>Id</th>
+                <th>Circle</th>
+                <th>Buyer</th>
+                <th>Buyer Email</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Maximum Price</th>
+                <th>Quantity</th>
+                <th>Is Delivered</th>
+
+              </tr>
+            </thead>
+            <tbody id="ordersbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- <h1>all buy requests here</h1> -->
+      </div>
+
+    </div>
+  </div>
+  <script>
+    async function logout() {
+      await fetch("/api/buyer/logout")
+      window.location.href = "/"
+    }
+
+
+    buildOrders()
+    async function buildOrders() {
+      const response = await fetch("/api/buyer/buyorders")
+      const data = await response.json()
+      const orders = data.orders
+      // console.log(data);
+      // console.log(orders);
+      for (let i = 0; i < orders.length; i++) {
+        let row = `<tr>
+          <td><input type="checkbox" name="subscribe" value="1"></td>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td> 
+          <td>${orders[i].circle}</td> 
+          <td>${orders[i].buyer}</td> 
+          <td>${orders[i].buyeremail}</td> 
+          <td>${orders[i].product.category}</td> 
+          <td>${orders[i].product.name}</td> 
+          <td>${orders[i].product.maxprice}</td> 
+          <td>${orders[i].product.quantity}</td> 
+          <td>${orders[i].isDelivered}</td> 
+           
+          </tr>
+        `
+        ordersbody.innerHTML += row
+      }
+    }
+    function getCheckBox() {
+      var ele = document.getElementById("price")
+      var price = document.getElementById("price").value;
+      if (price === null || price === "") {
+        alert("Please enter one common aggregate price");
+      }
+      else {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let ids = []
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            const row = checkbox.closest('tr');
+            const columns = row.querySelectorAll('td');
+            ids.push(columns[2].innerText)
+          }
+        });
+        if (ids.length < 2) {
+          alert("please select atleast 2 buyorders to aggreate");
+          ele.value = ""
+        }
+        // Send authentication request to backend server
+        else {
+          fetch('/api/seller/buyordersAggregate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              ids: ids,
+              price: price
+            })
+          })
+            .then(response => {
+              // console.log(response.ok);
+              if (response.ok) {
+                // Authentication succeeded, redirect to dashboard page
+                alert("These Buy Orders are Successfully Aggregated into a Single Aggregated Order.")
+                window.location.href = "/SellerDashboardAggregateBuyOrder";
+              } else {
+                // Authentication failed, show error message
+                alert('All Products Should be off Same Category to Aggregate!');
+                ele.value = ""
+                window.location.href = "/SellerDashboardAggregateBuyOrder";
+                // console.log(response);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert(`An error occurred \n${error}`);
+              window.location.href = "/SellerDashboardAggregateBuyOrder";
+            });
+        }
+      }
+    }
+
+  </script>
+</body>
+
+</html>

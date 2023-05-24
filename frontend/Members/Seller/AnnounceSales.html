@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Seller Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Seller Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/SellerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="/SellerDashboardAnnounceSales" class="list-group-item list-group-item-action">Announce Sales</a>
+          <a href="/SellerDashboardMySales" class="list-group-item list-group-item-action">My Sales</a>
+          <a href="/SellerDashboardAggregateBuyOrder" class="list-group-item list-group-item-action">Aggregate Buy Order</a>
+          <a href="/SellerDashboardCheckForOrderMatch" class="list-group-item list-group-item-action">Check for Order Match</a>  
+          <a href="/SellerDashboardBuyOrderNotifications" class="list-group-item list-group-item-action">Confirm Buy Order Notifications to place Final Order</a>
+          <a href="/SellerDashboardTransportOrderNotifications" class="list-group-item list-group-item-action">Confirm Transport Order Notifications for Transport Confirmation</a>
+            
+          <a href="/SellerDashboardBuyOrders" class="list-group-item list-group-item-action">Buy Orders</a>
+          <a href="/SellerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/SellerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="/SellerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/SellerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+        </div>
+      </div>
+
+
+      <div class="col-md-9">
+        <!-- Main content area -->
+        <div class="container mt-5">
+          <h2 class="text-center mb-4">Announce Sales</h2>
+          <form id="myForm">
+            <table class="table" id="myTable">
+              <thead>
+                <tr class="text-center">
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>MinPrice</th>
+                  <th>MaxPrice</th>
+                  <th>MinOrder</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="productTable">
+                <tr>
+                  <td>
+                    <input type="text" class="form-control" name="name" required />
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" name="category" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="quantity" step="1" min="0" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="minprice" step="1" min="0" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="maxprice" step="1" min="0" required />
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="minorder" step="1" min="0" required />
+                  </td>
+                  <!-- <td>
+                    <button type="button" class="btn btn-danger" onclick="removeProduct(this)">
+                      Remove
+                    </button>
+                  </td> -->
+                </tr>
+              </tbody>
+            </table>
+            <!-- <button type="button" class="btn btn-primary" onclick="addProduct()">
+              Add Product
+            </button> -->
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+
+      var form = document.getElementById("myForm");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault(); // prevent form from submitting
+
+        var formData = new FormData(form);
+        var dataObject = {};
+        // convert FormData to JSON object
+        formData.forEach(function (value, key) {
+          dataObject[key] = value;
+        });
+
+        // log the JSON object to the console
+        const jsonData = JSON.stringify(dataObject);
+        fetch('api/seller/sales', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: jsonData
+        })
+          .then(response => {
+            if (response.ok) {
+              // Authentication succeeded, redirect to dashboard page
+              alert("Sale For this product is Announced.")
+              window.location.href = "/SellerDashboardAnnounceSales";
+            } else {
+              // Authentication failed, show error message
+              alert('An error occurred while Announcing Sale, Please Try again with Proper Data and Seller must Login');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while Announcing Sale, Please Try again with Proper Data and Seller must Login');
+          });
+
+        // console.log(dataObject);
+
+        // axios.post("/api/seller/sales", dataObject)
+        //   .then((response) => {
+        //     console.log(response.dataObject);
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //   });
+      });
+      // function addProduct() {
+      //   var table = document.getElementById("productTable");
+      //   var newRow = table.insertRow();
+      //   var nameCell = newRow.insertCell();
+      //   var categoryCell = newRow.insertCell();
+      //   var quantityCell = newRow.insertCell();
+      //   var minPriceCell = newRow.insertCell();
+      //   var maxPriceCell = newRow.insertCell();
+      //   var minOrderCell = newRow.insertCell();
+      //   var buttonCell = newRow.insertCell();
+      //   nameCell.innerHTML =
+      //     '<input type="text" class="form-control" name="name" required>';
+      //   categoryCell.innerHTML =
+      //     '<input type="text" class="form-control" name="category" required >';
+      //   quantityCell.innerHTML =
+      //     '<input type="number" class="form-control" name="quantity" step="1" min="0" required>';
+      //   minPriceCell.innerHTML =
+      //     '<input type="number" class="form-control" name="minprice" step="1" min="0" required>';
+      //   maxPriceCell.innerHTML =
+      //     '<input type="number" class="form-control" name="maxprice" step="1" min="0" required>';
+      //   minOrderCell.innerHTML =
+      //     '<input type="number" class="form-control" name="minorder" step="1" min="0" required>';
+      //   buttonCell.innerHTML =
+      //     '<button type="button" class="btn btn-danger" onclick="removeProduct(this)">Remove</button>';
+      // }
+
+      // function removeProduct(button) {
+      //   var row = button.parentNode.parentNode;
+      //   row.parentNode.removeChild(row);
+      // }
+    </script>
+</body>
+
+</html>

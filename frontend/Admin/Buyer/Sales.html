@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Buyer Admin Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .list-group {
+      position: fixed; 
+      margin-top: 4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Buyer Admin Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<!-- Main content -->
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-md-2">
+      <!-- Sidebar menu -->
+      <div class="list-group">
+        <a href="adminBuyerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+        <a href="BuyerAdminDashboardAddMember" class="list-group-item list-group-item-action">Add Member</a>
+        <a href="BuyerAdminDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+        <a href="BuyerAdminDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+        <a href="BuyerAdminDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>        
+        <a href="BuyerAdminDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+        <a href="BuyerAdminDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+      </div>
+
+    </div>
+
+    <div class="container m-4 mt-5" >
+      <h2 style="text-align: center;">Sales Details</h2>
+      <table class="table table-striped mt-5">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Id</th>
+            <th>Circle</th>
+            <th>Seller</th>
+            <th>Seller Email</th>
+            <th>Category</th>
+            <th>Product</th>
+            <th>Min Price</th>
+            <th>Min Order</th>
+            <th>Quantity</th>
+            
+          </tr>
+        </thead>
+        <tbody id="salesbody">
+          <!-- Table rows will be dynamically populated here -->
+        </tbody>
+      </table>
+    </div>
+
+
+
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+      
+      buildSales()
+      async function buildSales() {
+        const response = await fetch("/api/buyer/sales")
+        const data = await response.json()
+        const sales = data.sales
+       // console.log(sales)
+        for (let i = 0; i < sales.length; i++) {
+          let row = `<tr>
+            <td>${i + 1}</td> 
+            <td>${sales[i]._id}</td> 
+            <td>${sales[i].circle}</td> 
+            <td>${sales[i].seller}</td> 
+            <td>${sales[i].selleremail}</td> 
+            <td>${sales[i].product.category}</td> 
+            <td>${sales[i].product.name}</td> 
+            <td>${sales[i].product.minprice}</td> 
+            <td>${sales[i].product.minorder}</td> 
+            <td>${sales[i].product.quantity}</td> 
+            </tr>
+          `
+          salesbody.innerHTML += row
+        }
+      }
+
+    </script>
+
+     
+
+</div>
+
+</body>
+
+</html>

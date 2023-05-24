@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Seller Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .list-group {
+
+      margin-top: 30%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Seller Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="/SellerDashboard" class="list-group-item list-group-item-action active"
+            style="z-index: 0;">Dashboard</a>
+          <a href="/SellerDashboardAnnounceSales" class="list-group-item list-group-item-action">Announce Sales</a>
+          <a href="/SellerDashboardMySales" class="list-group-item list-group-item-action">My Sales</a>
+          <a href="/SellerDashboardAggregateBuyOrder" class="list-group-item list-group-item-action">Aggregate Buy
+            Order</a>
+          <a href="/SellerDashboardCheckForOrderMatch" class="list-group-item list-group-item-action">Check for Order
+            Match</a>
+          <a href="/SellerDashboardBuyOrderNotifications" class="list-group-item list-group-item-action">Confirm Buy
+            Order Notifications to place Final Order</a>
+          <a href="/SellerDashboardTransportOrderNotifications" class="list-group-item list-group-item-action">Confirm
+            Transport Order Notifications for Transport Confirmation</a>
+
+          <a href="/SellerDashboardBuyOrders" class="list-group-item list-group-item-action">Buy Orders</a>
+          <a href="/SellerDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="/SellerDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated
+            Orders</a>
+          <a href="/SellerDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="/SellerDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+        </div>
+      </div>
+
+
+      <div class="col-md-9 mt-5">
+        <!-- Main content area -->
+        <h2 style="text-align: center;">Buy Order Confirm Notifications</h2>
+        <div class="container m-4">
+          <!-- <h4 style="text-align: center;">Buy Order Confirm Notifications</h4> -->
+          <div class="container">
+            <p>
+              <b>
+                Click These Notifications to place the Final Order Final Order will reduce your stock Quantity <br>
+                <i>Note </i> <b>Kindly Select Only one Notification at a time to confirm the Final Order.</b>
+              </b>
+            </p>
+          </div>
+          <br>
+          <button type=" button" class="btn btn-info" onclick="getCheckBox()">
+            Click to Confirm Final Order
+          </button>
+          <br><br>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>click</th>
+                <th>No.</th>
+                <th>Notification Id</th>
+                <th>Sale Id</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Stock Left</th>
+                <th>Total Quantity</th>
+                <th>Total Price</th>
+                <th>No of Buyers</th>
+              </tr>
+            </thead>
+            <tbody id="notificationsbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+
+      async function getCheckBox() {
+        // alert("clicked")
+        // const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var noti = document.querySelectorAll('input[type=radio][name=buildAggOrders]');
+
+        let ids = []
+        noti.forEach((checkbox) => {
+          if (checkbox.checked) {
+            const row = checkbox.closest('tr');
+            const columns = row.querySelectorAll('td');
+            ids.push(columns[2].innerText)
+          }
+        });
+        // console.log(ids);
+        if (ids.length < 1) {
+          alert("Please Select one Notification to confirm")
+          window.location.href = "/SellerDashboardBuyOrderNotifications";
+
+        }
+        // else if (ids.length > 1) {
+        //   alert("Please Select Only one Notification to confirm, Not more than one.")
+        //   window.location.href = "/SellerDashboardBuyOrderNotifications";
+
+        // }
+        else {
+          const id = ids[0]
+          // console.log(id);
+          fetch(`/api/seller/placeorder/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          })
+            .then(response => {
+              if (response.ok) {
+                // Authentication succeeded, redirect to dashboard page
+                alert("Final Order is Placed Now,stock is reduced and waiting for Transporter for Delivering the order, ThankYou!!")
+                window.location.href = "/SellerDashboardBuyOrderNotifications";
+              } else {
+                alert(`Either All Buyers haven't Confirmed yet, or the Required Qunatity is Greater than Stock left So Sorry, can't Place Final Order Now, Please Try Again Later!`);
+                window.location.href = "/SellerDashboardBuyOrderNotifications";
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert(`An error occurred \n${error}`);
+              window.location.href = "/SellerDashboardBuyOrderNotifications";
+
+            });
+        }
+      }
+
+
+      buildNotifications()
+      async function buildNotifications() {
+        const response = await fetch("/api/seller/mynotifications")
+        const data = await response.json()
+        // console.log(data);
+        const notifications = data.myNotifiactions
+        // console.log(notifications);
+        for (let i = 0; i < notifications.length; i++) {
+          const orderid = notifications[i].order.order
+          const agg = await fetch(`/api/buyer/getaggregateorder/${orderid}`)
+          const d = await agg.json()
+          const dd = d.aggregatedOrder
+          // console.log(notifications[i].saleId);
+          // <td><input type="checkbox" name="subscribe" value="1"></td>
+          let row = `
+          <td><input type="radio" id="buildAggOrders" name="buildAggOrders" value="1"></td>
+                  <td>${i + 1}</td>
+                  <td>${notifications[i]._id}</td>
+                  <td>${notifications[i].saleId._id}</td>
+                  <td>${notifications[i].saleId.product.category}</td>
+                  <td>${notifications[i].saleId.product.name}</td>
+                  <td>${notifications[i].saleId.product.quantity}</td>
+                  <td>${dd.quantity}</td>
+                  <td>${dd.totalprice}</td>
+                  <td>${dd.users.length}</td>
+          `
+          notificationsbody.innerHTML += row
+        }
+      }
+
+    </script>
+</body>
+
+</html>

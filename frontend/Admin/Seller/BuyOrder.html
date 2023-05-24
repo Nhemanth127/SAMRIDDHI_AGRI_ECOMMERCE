@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Seller Admin Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <style>
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .list-group {
+      position: fixed; 
+      margin-top: 4%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Seller Admin Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" onclick="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-md-2">
+        <!-- Sidebar menu -->
+        <div class="list-group">
+          <a href="adminSellerDashboard" class="list-group-item list-group-item-action active">Dashboard</a>
+          <a href="SellingAdminDashboardAddMember" class="list-group-item list-group-item-action">Add Member</a>
+          <a href="SellingAdminDashboardBuyOrder" class="list-group-item list-group-item-action">Buy Order</a>
+          <a href="SellingAdminDashboardSales" class="list-group-item list-group-item-action">Sales</a>
+          <a href="SellingAdminDashboardAggregatedOrders" class="list-group-item list-group-item-action">Aggregated Orders</a>
+          <a href="SellingAdminDashboardMatchedOrders" class="list-group-item list-group-item-action">Matched Orders</a>
+          <a href="SellingAdminDashboardFinalOrders" class="list-group-item list-group-item-action">Final Orders</a>
+        </div>
+      </div>
+
+
+      <div class="col-md-9 mt-5">
+        <h2 style="text-align: center;">Buy Order Details</h2>  
+        <div class=" container mt-4">
+          <h4 >Buy Order Requests From Users Of All Circle</h4>
+          <table class="table table-striped mt-4">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Id</th>
+                <th>Circle</th>
+                <th>Buyer</th>
+                <th>Buyer Email</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Maximum Price</th>
+                <th>Quantity</th>
+                <th>Is Delivered</th>
+
+              </tr>
+            </thead>
+            <tbody id="ordersbody">
+              <!-- Table rows will be dynamically populated here -->
+            </tbody>
+          </table>
+      </div>
+
+      <!-- <h1>all buy requests here</h1> -->
+    </div>
+
+  </div>
+  <script>
+    async function logout() {
+        await fetch("/api/buyer/logout")
+        window.location.href = "/"
+      }
+      
+    buildOrders()
+    async function buildOrders() {
+      const response = await fetch("/api/buyer/buyorders")
+      const data = await response.json()
+      const orders = data.orders
+      // console.log(data);
+      console.log(orders);
+      for (let i = 0; i < orders.length; i++) {
+        let row = `<tr>
+          <td>${i + 1}</td> 
+          <td>${orders[i]._id}</td> 
+          <td>${orders[i].circle}</td> 
+          <td>${orders[i].buyer}</td> 
+          <td>${orders[i].buyeremail}</td> 
+          <td>${orders[i].product.category}</td> 
+          <td>${orders[i].product.name}</td> 
+          <td>${orders[i].product.maxprice}</td> 
+          <td>${orders[i].product.quantity}</td> 
+          <td>${orders[i].isDelivered}</td> 
+           
+          </tr>
+        `
+        ordersbody.innerHTML += row
+      }
+    }
+
+  </script>
+
+
+</body>
+
+</html>
